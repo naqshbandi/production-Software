@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelaNexus ERP - Enterprise Management Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #060913;
+            --panel-bg: #0f172a;
+            --panel-border: #1e293b;
+            --neon-blue: #00d8ff;
+            --neon-cyan: #00f0ff;
+            --neon-red: #ff3366;
+            --neon-green: #00ffcc;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .neon-box {
+            box-shadow: 0 0 25px rgba(0, 216, 255, 0.2), inset 0 0 15px rgba(0, 216, 255, 0.05);
+            border: 1px solid rgba(0, 216, 255, 0.45);
+        }
+
+        .cyber-btn {
+            background: linear-gradient(135deg, #0284c7, #00d8ff);
+            color: #040812;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-btn:hover {
+            box-shadow: 0 0 20px rgba(0, 216, 255, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #060913; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+
+        .grid-input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            width: 100%;
+            padding: 4px 8px;
+        }
+        .grid-input:focus {
+            outline: 1px solid var(--neon-blue);
+            background: rgba(0, 216, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- ===================================================================== -->
+    <!-- 1. MANDATORY LICENSE ACQUISITION & PAYMENT GATE (INITIAL LOCK SCREEN) -->
+    <!-- ===================================================================== -->
+    <div id="license-acquisition-wall" class="fixed inset-0 bg-[#050811] z-50 overflow-y-auto custom-scrollbar flex flex-col items-center justify-start py-6 px-4">
+        
+        <!-- Brand Logo Header -->
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-950 flex items-center justify-center font-black text-3xl text-cyan-200 border border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.5)]">
+                N
+            </div>
+            <div>
+                <h1 class="text-2xl font-black tracking-widest text-white uppercase">VELANEXUS</h1>
+                <div class="text-xs font-bold tracking-[0.35em] text-cyan-400 text-center">- E R P -</div>
+            </div>
+        </div>
+
+        <!-- Main Acquisition Card -->
+        <div class="w-full max-w-4xl bg-[#0b1120] neon-box rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-4 gap-2">
+                <div>
+                    <h2 class="text-base md:text-lg font-bold text-white tracking-wide uppercase">
+                        SOFTWARE LICENSE ACQUISITION FORM - <span class="text-cyan-400">[Step 1: Registration]</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Complete payment verification to unlock download & activate terminal.</p>
+                </div>
+                <button onclick="openActivationKeyModal()" class="text-xs bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-700/70 px-3 py-2 rounded-lg font-semibold transition flex items-center gap-2 self-start">
+                    <i class="fa-solid fa-key"></i> Already Approved? Enter 25-Char Key
+                </button>
+            </div>
+
+            <!-- Merchant Registration Inputs -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Merchant Name *</label>
+                    <input type="text" id="reg-name" placeholder="Full Name / Owner" class="w-full bg-[#060a14] border border-slate-700 focus:border-cyan-400 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Business CNIC / Registration # *</label>
+                    <input type="text" id="reg-cnic" placeholder="e.g. 35202-XXXXXXX-X" class="w-full bg-[#060a14] border border-slate-700 focus:border-cyan-400 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">WhatsApp Contact (For Key Delivery) *</label>
+                    <input type="text" id="reg-whatsapp" placeholder="+92 3XX XXXXXXX" class="w-full bg-[#060a14] border border-slate-700 focus:border-cyan-400 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Storage Architecture Choice (Hybrid Engine) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="cursor-pointer bg-[#070d19] border-2 border-cyan-500/80 rounded-xl p-4 flex flex-col justify-between transition" id="card-custodian" onclick="selectStorageOption('Custodian Mode (Local Desktop SQLite)')">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> CUSTODIAN MODE (Local Storage)
+                            </span>
+                            <input type="radio" name="storage_mode" checked class="accent-cyan-400 w-4 h-4">
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            100% offline-first encrypted SQLite database stored strictly on your local computer hard drive. Zero cloud exposure.
+                        </p>
+                    </div>
+                </label>
+
+                <label class="cursor-pointer bg-[#070d19] border border-slate-800 hover:border-cyan-700 rounded-xl p-4 flex flex-col justify-between transition" id="card-nebula" onclick="selectStorageOption('Nebula Mode (Cloud-Synced Partition)')">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-cyan-400 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span> NEBULA MODE (Cloud Storage)
+                            </span>
+                            <input type="radio" name="storage_mode" class="accent-cyan-400 w-4 h-4">
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Encrypted cloud synchronization for automated real-time backup and multi-terminal restoration across locations.
+                        </p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Commercial Tier Selector -->
+            <div class="bg-[#060a14] border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs uppercase tracking-wider text-slate-400 block">Select Commercial License Enclosure</span>
+                    <span class="text-sm font-bold text-cyan-300" id="selected-tier-label">Single Business License [Max 1 Business Enclosure]</span>
+                </div>
+                <select id="tier-selector" onchange="updateSelectedTier()" class="bg-slate-900 border border-cyan-800 text-white text-xs rounded-lg px-3 py-2.5 focus:outline-none">
+                    <option value="1-Biz-PKR">Pakistan: 1-Business — PKR 100,000 Setup (PKR 36,500/yr)</option>
+                    <option value="2-Biz-PKR">Pakistan: 2-Business — PKR 200,000 Setup (PKR 65,000/yr)</option>
+                    <option value="3-Biz-PKR">Pakistan: 3-Business — PKR 300,000 Setup (PKR 100,000/yr)</option>
+                    <option value="1-Biz-USD">International: 1-Business — $600 Setup ($200/yr)</option>
+                    <option value="2-Biz-USD">International: 2-Business — $1,200 Setup ($400/yr)</option>
+                    <option value="3-Biz-USD">International: 3-Business — $1,800 Setup ($600/yr)</option>
+                </select>
+            </div>
+
+            <!-- Payment & Validation Gateways (Binance Crypto & Bank Transfer) -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-wallet"></i> PAYMENT & VALIDATION GATEWAYS
+                    </h3>
+                    <span class="text-xs text-amber-400 font-semibold">Status: Pending Receipt Upload</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Binance Crypto Section -->
+                    <div class="bg-[#070c18] border border-slate-800 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm font-bold text-white">Crypto (Binance USDT)</div>
+                                <div class="text-[11px] text-slate-400">TRC20 / BEP20 / Binance Pay</div>
+                            </div>
+                            <i class="fa-solid fa-coins text-amber-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">USDT Wallet Address / Binance Pay ID</label>
+                            <div class="flex items-center bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5">
+                                <input type="text" readonly value="TX98kL2pQ7mVn4zR8wY1cB5xJ3hF9dG2aS" id="binance-id" class="bg-transparent text-xs font-mono text-cyan-300 w-full focus:outline-none">
+                                <button onclick="copyText('binance-id')" class="text-xs text-slate-400 hover:text-white ml-2" title="Copy"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 pt-1">
+                            <div class="w-16 h-16 bg-white p-1 rounded flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-qrcode text-slate-950 text-5xl"></i>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Scan QR via Binance App or copy Wallet ID to transfer setup fee.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bank Transfer Section -->
+                    <div class="bg-[#070c18] border border-slate-800 rounded-xl p-4 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm font-bold text-white">Bank Transfer (PKR / Wire)</div>
+                                <div class="text-[11px] text-slate-400">Direct Meezan / Commercial Bank</div>
+                            </div>
+                            <i class="fa-solid fa-building-columns text-cyan-400 text-xl"></i>
+                        </div>
+                        <div class="space-y-1.5 text-xs">
+                            <div class="bg-slate-950 border border-slate-800 rounded px-3 py-1.5 flex justify-between">
+                                <span class="text-slate-400">Bank Name:</span>
+                                <span class="text-white font-semibold">Meezan Bank Limited</span>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 rounded px-3 py-1.5 flex justify-between">
+                                <span class="text-slate-400">Account Title:</span>
+                                <span class="text-white font-semibold">WEB BRAND UP DIGITAL</span>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 rounded px-3 py-1.5 flex justify-between items-center">
+                                <span class="text-slate-400">IBAN:</span>
+                                <span class="text-cyan-300 font-mono text-[11px]">PK36MEZN0002140105894210</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screenshot Receipt Upload & Submit -->
+            <div class="pt-2 space-y-3">
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <input type="file" id="receipt-file" accept="image/*" class="hidden" onchange="handleReceiptUpload(event)">
+                    <button onclick="document.getElementById('receipt-file').click()" class="w-full sm:w-auto px-4 py-3 bg-slate-900 hover:bg-slate-800 border border-dashed border-cyan-500 text-cyan-300 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                        <span id="receipt-btn-text">Attach Payment Screenshot (Max 150KB)</span>
+                    </button>
+
+                    <button onclick="submitAcquisitionForm()" class="w-full flex-1 cyber-btn py-3 px-6 rounded-xl text-sm uppercase tracking-wider shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Registration & Request Key
+                    </button>
+                </div>
+                <p id="submission-feedback" class="text-xs text-center text-emerald-400 hidden font-medium"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 2. 25-CHARACTER LICENSE ACTIVATION & HARDWARE HANDSHAKE MODAL         -->
+    <!-- ===================================================================== -->
+    <div id="activation-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center hidden z-[60] p-4">
+        <div class="bg-[#0b1120] neon-box w-full max-w-md rounded-2xl p-6 space-y-5">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-microchip text-cyan-400"></i> Hardware GUID & Key Activation
+                </h3>
+                <button onclick="closeActivationKeyModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-slate-400 block mb-1">Detected Machine Hardware Fingerprint</label>
+                    <input type="text" readonly value="VNX-CPU-89A4-MB77-2026-LOCK" class="w-full bg-slate-950 border border-slate-800 text-slate-400 font-mono px-3 py-2 rounded">
+                </div>
+                <div>
+                    <label class="text-cyan-400 font-bold block mb-1">Enter 25-Character License Key (Sent via WhatsApp)</label>
+                    <input type="text" id="unlock-key-input" placeholder="VNX26-XXXXX-XXXXX-XXXXX-XXXXX" class="w-full bg-slate-950 border border-cyan-600 text-cyan-300 font-mono px-3 py-2.5 rounded focus:outline-none">
+                </div>
+                <p class="text-[11px] text-slate-500">Demo Master Key for testing: <span class="text-cyan-400 font-mono select-all">VNX26-ADMIN-78600-CLOUD-VALID</span></p>
+            </div>
+
+            <button onclick="verifyAndUnlockApp()" class="w-full cyber-btn py-2.5 rounded-lg text-xs uppercase tracking-wider">
+                Verify Cloud Handshake & Unlock ERP
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 3. MAIN VELANEXUS ERP WORKSPACE (LOCKED UNTIL VALID KEY ACTIVATION)   -->
+    <!-- ===================================================================== -->
+    <div id="main-erp-workspace" class="hidden h-screen flex flex-col overflow-hidden">
+        <!-- Top Navigation Header -->
+        <header class="bg-[#0f172a] border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-600 to-indigo-900 flex items-center justify-center font-bold text-xl text-cyan-300 border border-cyan-400">N</div>
+                <div>
+                    <h1 class="text-lg font-black tracking-widest text-white uppercase flex items-center gap-2">
+                        VELANEXUS <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">ACTIVE</span>
+                    </h1>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4 text-xs">
+                <div class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="active-tier-badge" class="text-emerald-400 font-semibold">1-Business Enclosure</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded flex items-center gap-2">
+                    <i class="fa-solid fa-database text-cyan-400"></i>
+                    <span id="active-storage-badge" class="text-cyan-300 font-semibold">Custodian Mode (Local)</span>
+                </div>
+                <button onclick="lockSystem()" class="px-3 py-1.5 bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800 rounded">
+                    <i class="fa-solid fa-lock mr-1"></i> Lock
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Left Sidebar -->
+            <aside class="w-60 bg-[#0f172a] border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
+                <div class="space-y-4">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Departments</div>
+                    <nav class="space-y-1 text-sm">
+                        <button onclick="filterDept('all')" class="w-full text-left px-3 py-2 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-800/50">Master Sheet</button>
+                        <button onclick="filterDept('procurement')" class="w-full text-left px-3 py-2 rounded text-slate-300 hover:bg-slate-800">Procurement</button>
+                        <button onclick="filterDept('production')" class="w-full text-left px-3 py-2 rounded text-slate-300 hover:bg-slate-800">Production</button>
+                        <button onclick="filterDept('store')" class="w-full text-left px-3 py-2 rounded text-slate-300 hover:bg-slate-800">Store & Dispatch</button>
+                    </nav>
+                </div>
+
+                <div class="bg-slate-900 p-3 rounded border border-slate-800 text-xs space-y-2">
+                    <div class="text-slate-400 font-bold uppercase">Daily Capacity Limit</div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div class="bg-cyan-400 h-full w-[40%]"></div>
+                    </div>
+                    <div class="flex justify-between text-[11px] text-slate-400">
+                        <span>Active: 4/10 Units</span>
+                        <span class="text-emerald-400">Safe</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center Grid -->
+            <main class="flex-1 p-4 flex flex-col overflow-hidden">
+                <div class="mb-4 flex gap-2">
+                    <input type="text" id="schema-prompt" placeholder="Prompt-to-Form: e.g. Add Item Name, Quantity, Purchase Rate, Expiry Date..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-400">
+                    <button onclick="applyPromptSchema()" class="cyber-btn px-4 py-2 rounded-lg text-xs uppercase">Generate Grid</button>
+                </div>
+
+                <div class="flex-1 bg-slate-900 border border-slate-800 rounded-xl overflow-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-950 text-slate-400 text-xs uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Order / Item</th>
+                                <th class="p-3">Department</th>
+                                <th class="p-3">Deadline</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="erp-grid-body" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </main>
+
+            <!-- Right 5-Day Red Alert Sidebar -->
+            <aside class="w-64 bg-[#0d121f] border-l border-slate-800 p-4 shrink-0 overflow-y-auto">
+                <h3 class="text-xs font-black uppercase text-rose-400 flex items-center gap-2 mb-3">
+                    <i class="fa-solid fa-triangle-exclamation animate-pulse"></i> 5-Day Red Alerts
+                </h3>
+                <div id="alert-cards" class="space-y-2.5 text-xs"></div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        let selectedStorage = "Custodian Mode (Local Desktop SQLite)";
+        let receiptUploaded = false;
+
+        let orders = [
+            { id: 101, title: "Export Rice Batch #12", dept: "procurement", deadline: "2026-11-16" },
+            { id: 102, title: "Bridal Boutique Order #45", dept: "production", deadline: "2026-11-15" },
+            { id: 103, title: "Retail Inventory Restock", dept: "store", deadline: "2026-11-25" }
+        ];
+
+        function selectStorageOption(mode) {
+            selectedStorage = mode;
+            const cCard = document.getElementById('card-custodian');
+            const nCard = document.getElementById('card-nebula');
+            if (mode.includes('Custodian')) {
+                cCard.className = "cursor-pointer bg-[#070d19] border-2 border-cyan-500/80 rounded-xl p-4 flex flex-col justify-between transition";
+                nCard.className = "cursor-pointer bg-[#070d19] border border-slate-800 hover:border-cyan-700 rounded-xl p-4 flex flex-col justify-between transition";
+            } else {
+                nCard.className = "cursor-pointer bg-[#070d19] border-2 border-cyan-500/80 rounded-xl p-4 flex flex-col justify-between transition";
+                cCard.className = "cursor-pointer bg-[#070d19] border border-slate-800 hover:border-cyan-700 rounded-xl p-4 flex flex-col justify-between transition";
+            }
+        }
+
+        function updateSelectedTier() {
+            const sel = document.getElementById('tier-selector');
+            document.getElementById('selected-tier-label').innerText = sel.options[sel.selectedIndex].text;
+        }
+
+        function copyText(id) {
+            const el = document.getElementById(id);
+            el.select();
+            navigator.clipboard.writeText(el.value);
+            alert("Wallet ID Copied to Clipboard!");
+        }
+
+        function handleReceiptUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 150 * 1024) {
+                alert("File size exceeds 150KB limit! Please compress screenshot under 150KB.");
+                event.target.value = "";
+                receiptUploaded = false;
+                return;
+            }
+            receiptUploaded = true;
+            document.getElementById('receipt-btn-text').innerText = `Attached: ${file.name} (${Math.round(file.size/1024)}KB)`;
+        }
+
+        function submitAcquisitionForm() {
+            const name = document.getElementById('reg-name').value.trim();
+            const cnic = document.getElementById('reg-cnic').value.trim();
+            const whatsapp = document.getElementById('reg-whatsapp').value.trim();
+
+            if (!name || !cnic || !whatsapp) {
+                alert("Please fill all required Merchant Registration fields.");
+                return;
+            }
+            if (!receiptUploaded) {
+                alert("Payment Receipt Screenshot (Max 150KB) is mandatory before submission!");
+                return;
+            }
+
+            const feedback = document.getElementById('submission-feedback');
+            feedback.classList.remove('hidden');
+            feedback.innerText = `Registration & Payment Receipt logged for ${name}. Software Admin will verify payment and send your 25-Character License Key to ${whatsapp}.`;
+            
+            setTimeout(() => {
+                openActivationKeyModal();
+            }, 1200);
+        }
+
+        function openActivationKeyModal() {
+            document.getElementById('activation-modal').classList.remove('hidden');
+        }
+
+        function closeActivationKeyModal() {
+            document.getElementById('activation-modal').classList.add('hidden');
+        }
+
+        function verifyAndUnlockApp() {
+            const key = document.getElementById('unlock-key-input').value.trim();
+            if (key.length < 15) {
+                alert("Invalid License Key! Please enter the valid 25-character key issued by Software Admin.");
+                return;
+            }
+
+            // Unlock Main ERP Workspace
+            document.getElementById('activation-modal').classList.add('hidden');
+            document.getElementById('license-acquisition-wall').classList.add('hidden');
+            document.getElementById('main-erp-workspace').classList.remove('hidden');
+
+            document.getElementById('active-storage-badge').innerText = selectedStorage;
+            renderErpTable('all');
+        }
+
+        function lockSystem() {
+            document.getElementById('main-erp-workspace').classList.add('hidden');
+            document.getElementById('license-acquisition-wall').classList.remove('hidden');
+        }
+
+        function renderErpTable(deptFilter) {
+            const tbody = document.getElementById('erp-grid-body');
+            const alertBox = document.getElementById('alert-cards');
+            tbody.innerHTML = '';
+            alertBox.innerHTML = '';
+
+            const today = new Date('2026-11-13');
+
+            orders.forEach(o => {
+                const diff = Math.ceil((new Date(o.deadline) - today) / (1000 * 60 * 60 * 24));
+                if (diff <= 5) {
+                    alertBox.innerHTML += `
+                        <div class="bg-rose-950/30 border border-rose-800 p-2.5 rounded">
+                            <div class="font-bold text-rose-300">#${o.id} ${o.title}</div>
+                            <div class="text-[11px] text-slate-400 mt-1">Due in <span class="text-rose-400 font-bold">${diff} days</span> (${o.dept})</div>
+                        </div>`;
+                }
+
+                if (deptFilter === 'all' || o.dept === deptFilter) {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-800/40">
+                            <td class="p-3 font-mono text-xs text-slate-400">#${o.id}</td>
+                            <td class="p-3 font-semibold text-white">${o.title}</td>
+                            <td class="p-3 uppercase text-xs text-cyan-300">${o.dept}</td>
+                            <td class="p-3 font-mono text-xs">${o.deadline}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="claimOrder(${o.id})" class="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-700 rounded text-xs font-bold">✓ Claim</button>
+                            </td>
+                        </tr>`;
+                }
+            });
+        }
+
+        function claimOrder(id) {
+            const stages = ['procurement', 'production', 'store'];
+            const item = orders.find(x => x.id === id);
+            if (!item) return;
+            const idx = stages.indexOf(item.dept);
+            if (idx < stages.length - 1) {
+                item.dept = stages[idx + 1];
+            } else {
+                orders = orders.filter(x => x.id !== id);
+            }
+            renderErpTable('all');
+        }
+
+        function filterDept(d) {
+            renderErpTable(d);
+        }
+
+        function applyPromptSchema() {
+            const val = document.getElementById('schema-prompt').value.trim();
+            if (val) alert(`Dynamic Schema Generated for: "${val}"`);
+        }
+    </script>
+</body>
+</html>
